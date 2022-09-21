@@ -1,0 +1,35 @@
+org: viktorkp
+app: aws-node-http-api
+service: aws-node-http-api
+frameworkVersion: "2"
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:*
+      Resource:
+        - arn:aws:dynamodb:us-east-1:008083492688:table/TodoTable
+functions:
+  addTodo:
+    handler: src/addTodo.handler
+    events:
+      - httpApi:
+          path: /
+          method: post
+
+resources:
+  Resources:
+    TodoTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: TodoTable
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
